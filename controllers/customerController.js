@@ -80,6 +80,16 @@ const updatePhoto = async (req,res,next) => {
     response(res,true,user,'Photo profile has been update',200)
 }
 
+const deletePhoto = async (req,res,next) => {
+    const {user} = req
+    if (!user.photo) return response(res,false,null,'No photo profile to delete',422)
+    await cloudinary.v2.uploader.destroy(user.publicId)
+    user.photo = null
+    user.publicId = null
+    await user.save()
+    response(res,true,user,'Photo profile has been delete',200)
+}
+
 
 
 module.exports = {
@@ -90,5 +100,6 @@ module.exports = {
     updateProfile,
     updateEmail,
     updatePassword,
-    updatePhoto
+    updatePhoto,
+    deletePhoto
 }

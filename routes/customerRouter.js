@@ -56,5 +56,9 @@ router.route('/profile/photo')
         isUploadPhoto(),
         customerController.updatePhoto
     )
+    .delete(
+        passport.authenticate('jwt', {session : false}),
+        customerController.deletePhoto
+    )
 
 module.exports = router

@@ -13,6 +13,9 @@ const Customer = db.define(
         photo : {
             type : Sequelize.STRING
         },
+        publicId : {
+            type : Sequelize.STRING
+        },
         gender : {
             type : Sequelize.STRING
         },

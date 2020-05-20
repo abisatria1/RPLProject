@@ -2,6 +2,7 @@ const {response,customError} = require('../helpers/wrapper')
 const Customer = require('../models/customer')
 const {hashPassword,comparePassword} = require('../helpers/hash')
 const jwt = require('jsonwebtoken')
+const cloudinary = require('../config/cloudinary')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -68,8 +69,13 @@ const updatePassword = async (req,res,next) => {
 
 const updatePhoto = async (req,res,next) => {
     const {user} = req
+    if (user.photo) {
+        await cloudinary.v2.uploader.destroy(user.publicId)
+    }
     const photo = req.file.url
+    const publicId = req.file.public_id
     user.photo = photo
+    user.publicId = publicId
     await user.save()
     response(res,true,user,'Photo profile has been update',200)
 }

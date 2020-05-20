@@ -28,7 +28,7 @@ const updatePasswordSchema = Joi.object().keys({
 })
 
 const updatePhotoSchema = Joi.object().keys({
-    photoProfile : Joi.any().required()
+    type : Joi.string().required()
 })
 
 

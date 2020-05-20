@@ -53,6 +53,7 @@ router.route('/profile/photo')
     .patch(
         passport.authenticate('jwt', {session : false}),
         upload.single('photoProfile'), 
+        validateBody(schema.updatePhotoSchema),
         isUploadPhoto(),
         customerController.updatePhoto
     )

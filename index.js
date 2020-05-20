@@ -27,7 +27,8 @@ app.use((req,res,next) => {
 
 app.use((err,req,res,next) => {
     const {message} = err
-    response(res,false,null,message,500)
+    const status = err.status || 500
+    response(res,false,null,message,status)
 })
 
 

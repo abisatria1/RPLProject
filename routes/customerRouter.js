@@ -1,10 +1,11 @@
 const router = require('express-promise-router')()
 const customerController = require('../controllers/customerController')
-const {validateBody} = require('../helpers/validator/validateBody')
+const {validateBody,isUploadPhoto} = require('../helpers/validator/validateBody')
 const validator= require('../helpers/validator/customerValidator')
 const schema= require('../schemas/customerSchema')
 const passport = require('passport')
 const authConfig = require('../helpers/auth')
+const upload = require('../helpers/upload')
 
 router.route('/')
     // get all data customer
@@ -46,6 +47,14 @@ router.route('/profile/password')
         validator.validateOldPassword(),
         validator.validateRePassword(),
         customerController.updatePassword
+    )
+
+router.route('/profile/photo')
+    .patch(
+        passport.authenticate('jwt', {session : false}),
+        upload.single('photoProfile'), 
+        isUploadPhoto(),
+        customerController.updatePhoto
     )
 
 module.exports = router

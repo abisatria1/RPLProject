@@ -67,7 +67,11 @@ const updatePassword = async (req,res,next) => {
 }
 
 const updatePhoto = async (req,res,next) => {
-    //
+    const {user} = req
+    const photo = req.file.url
+    user.photo = photo
+    await user.save()
+    response(res,true,user,'Photo profile has been update',200)
 }
 
 

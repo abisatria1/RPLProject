@@ -31,6 +31,11 @@ const updatePhotoSchema = Joi.object().keys({
     type : Joi.string().required()
 })
 
+const addPasswordSchema = Joi.object().keys({
+    password : Joi.string().min(6).required(),
+    rePassword : Joi.string().min(6).required()
+})
+
 
 module.exports = {
     registerSchema,
@@ -38,5 +43,6 @@ module.exports = {
     updateEmailSchema,
     updateProfileSchema,
     updatePasswordSchema,
-    updatePhotoSchema
+    updatePhotoSchema,
+    addPasswordSchema
 }

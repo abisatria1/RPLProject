@@ -35,6 +35,12 @@ const login = async (req,res,next) => {
     response(res,true,{token},'Login success',200)
 }
 
+const loginGoogle = async (req,res,next) => {
+    const user = req.user[0]
+    const token = signToken(user)
+    response(res,true,{token},'Login success',200)
+}
+
 const getProfile = async (req,res,next) => {
     response(res,true,req.user,'Customer profile has been fetched',200)
 }
@@ -69,7 +75,7 @@ const updatePassword = async (req,res,next) => {
 
 const updatePhoto = async (req,res,next) => {
     const {user} = req
-    if (user.photo) {
+    if (user.publicId) {
         await cloudinary.v2.uploader.destroy(user.publicId)
     }
     const photo = req.file.url
@@ -82,13 +88,22 @@ const updatePhoto = async (req,res,next) => {
 
 const deletePhoto = async (req,res,next) => {
     const {user} = req
-    if (!user.photo) return response(res,false,null,'No photo profile to delete',422)
+    if (!user.publicId) return response(res,false,null,'No photo profile to delete',422)
     await cloudinary.v2.uploader.destroy(user.publicId)
     user.photo = null
     user.publicId = null
     await user.save()
     response(res,true,user,'Photo profile has been delete',200)
 }
+
+const addPassword = async (req,res,next) => {
+    const {user} = req
+    user.password = hashPassword(req.body.password)
+    await user.save()
+    response(res,true,user,'Password has been added',200)
+}
+
+
 
 
 
@@ -101,5 +116,7 @@ module.exports = {
     updateEmail,
     updatePassword,
     updatePhoto,
-    deletePhoto
+    deletePhoto,
+    loginGoogle,
+    addPassword
 }

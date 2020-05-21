@@ -20,6 +20,18 @@ router.route('/login')
     // login customer
     .post(validateBody(schema.loginSchema) , customerController.login)
 
+// google+ login
+router.route('/login/google')
+    .get(
+        passport.authenticate('google',{scope : ['profile' , 'email'] , session : false})
+    )
+
+router.route('/login/google/callback')
+    .get(
+        passport.authenticate('google' , {session : false}),
+        customerController.loginGoogle
+    )
+
 router.route('/profile')
     // get data profile
     .get(passport.authenticate('jwt', {session : false}),customerController.getProfile)
@@ -47,6 +59,14 @@ router.route('/profile/password')
         validator.validateOldPassword(),
         validator.validateRePassword(),
         customerController.updatePassword
+    )
+    // add password
+    .post(
+        passport.authenticate('jwt', {session : false}),
+        validator.validateAddPassword(),
+        validateBody(schema.addPasswordSchema),
+        validator.validateRePassword(),
+        customerController.addPassword
     )
 
 router.route('/profile/photo')

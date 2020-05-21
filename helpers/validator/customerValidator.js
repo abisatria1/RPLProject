@@ -32,8 +32,17 @@ const validateOldPassword = () => {
     }
 }
 
+const validateAddPassword = () => {
+    return async (req,res,next) => {
+        const {user} = req
+        if (user.password) return response(res,false,null,'Password not null cant add password',400)
+        next()
+    }
+}
+
 module.exports = {
     validateRePassword,
     validateEmail,
-    validateOldPassword
+    validateOldPassword,
+    validateAddPassword
 }

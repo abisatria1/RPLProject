@@ -24,8 +24,7 @@ const Customer = db.define(
             allowNull : false
         },
         password : {
-            type : Sequelize.STRING,
-            allowNull : false
+            type : Sequelize.STRING
         },
         
     }

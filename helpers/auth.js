@@ -1,6 +1,7 @@
 const passport = require('passport')
 const jwtStrategy = require('passport-jwt').Strategy
 const {ExtractJwt} = require('passport-jwt')
+const googleStrategy = require('passport-google-oauth20').Strategy
 
 // addtional
 const dotenv = require('dotenv').config()
@@ -25,3 +26,33 @@ passport.use(new jwtStrategy({
         done(err,false)
     }
 }))
+
+// google auth
+passport.use(new googleStrategy (
+    {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URI
+    },
+    async (accessToken , refreshToken , profile, done) => {
+        try {
+            const email = profile.emails[0].value
+            const name = profile.displayName
+            const photo = profile.photos[0].value
+            const result = await Customer.findOrCreate(
+                {
+                    where : {email},
+                    defaults : {
+                        name,
+                        photo,
+                        email,
+                    }
+                }
+            )
+            done(null,result)
+        } catch (err) {
+            console.log(err.message)
+            done(err,false)
+        }
+    }
+))

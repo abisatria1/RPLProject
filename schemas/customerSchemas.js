@@ -39,6 +39,5 @@ module.exports = {
     updateEmailSchema,
     updateProfileSchema,
     updatePasswordSchema,
-    updatePhotoSchema,
     addPasswordSchema
 }

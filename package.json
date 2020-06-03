@@ -25,7 +25,7 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "prod": "node index.js",
+    "start": "node index.js",
     "dev": "nodemon"
   },
   "author": "abisatria",

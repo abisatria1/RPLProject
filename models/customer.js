@@ -16,9 +16,6 @@ const Customer = db.define(
         publicId : {
             type : Sequelize.STRING
         },
-        gender : {
-            type : Sequelize.STRING
-        },
         email : {
             type : Sequelize.STRING,
             allowNull : false
@@ -26,8 +23,19 @@ const Customer = db.define(
         password : {
             type : Sequelize.STRING
         },
+        // email verification and forgot password
+        emailToken : {
+            type : Sequelize.STRING,
+        },
+        forgotPassToken : {
+            type : Sequelize.STRING
+        },
+        isVerified : {
+            type  : Sequelize.STRING
+        }
         
-    }
+    },
+    {paranoid : true}
 )
 
 module.exports = Customer

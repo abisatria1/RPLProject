@@ -6,8 +6,8 @@ const storage = cloudinaryStorage({
     cloudinary: cloudinary,
     folder: (req, file, cb) => {
         let folderName = 'RplProject/'
-        switch (req.body.type) {
-            case 'customer':
+        switch (file.fieldname) {
+            case 'photoProfile':
                 folderName += "customer"
                 break;
             case 'goods' : 

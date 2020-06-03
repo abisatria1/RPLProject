@@ -17,7 +17,7 @@ app.use(cors())
 
 // router
 const customerRouter = require('./routes/customerRouter')
-
+app.use('/' , (req,res,next) => res.send('Application successfuly deploy, welcome to the API'))
 app.use('/api/customer', customerRouter)
 // error handling
 app.use((req,res,next) => {

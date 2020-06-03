@@ -1,7 +1,7 @@
 const passport = require('passport')
 const jwtStrategy = require('passport-jwt').Strategy
 const {ExtractJwt} = require('passport-jwt')
-const googleStrategy = require('passport-google-oauth20').Strategy
+const googleStrategy = require('passport-google-plus-token')
 
 // addtional
 const dotenv = require('dotenv').config()
@@ -28,11 +28,10 @@ passport.use(new jwtStrategy({
 }))
 
 // google auth
-passport.use(new googleStrategy (
+passport.use("googleToken" , new googleStrategy (
     {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URI
     },
     async (accessToken , refreshToken , profile, done) => {
         try {

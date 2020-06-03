@@ -22,13 +22,8 @@ router.route('/login')
 
 // google+ login
 router.route('/login/google')
-    .get(
-        passport.authenticate('google',{scope : ['profile' , 'email'] , session : false})
-    )
-
-router.route('/login/google/callback')
-    .get(
-        passport.authenticate('google' , {session : false}),
+    .post(
+        passport.authenticate('googleToken', {session : false}),
         customerController.loginGoogle
     )
 

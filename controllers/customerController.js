@@ -17,6 +17,7 @@ const index = async (req,res,next) => {
     response(res,true,customer,'All data has been fetched',200)
 }
 
+// auth
 const register = async(req,res,next) => {
     let customer = new Customer(req.body)
     customer.password = hashPassword(customer.password)
@@ -41,17 +42,30 @@ const loginGoogle = async (req,res,next) => {
     response(res,true,{token},'Login success',200)
 }
 
+const verifyEmail = async (req,res,next) => {
+    // 
+}
+
+const resendToken = async (req,res,next) => {
+    // 
+}
+
+const forgotPassword = async (req,res,next) => {
+    // 
+}
+
+// end for auth
+
 const getProfile = async (req,res,next) => {
     response(res,true,req.user,'Customer profile has been fetched',200)
 }
 
 const updateProfile = async (req,res,next) => {
     const {user} = req
-    const {name,phone,gender} = req.body
+    const {name,phone} = req.body
     if(!user) return next(customError('Customer not found',401))
     user.name = name
     user.phone = phone
-    user.gender = gender
     await user.save()
     response(res,true,user,'User data has been update',200)
 }

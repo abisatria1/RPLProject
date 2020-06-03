@@ -2,14 +2,18 @@ const router = require('express-promise-router')()
 const customerController = require('../controllers/customerController')
 const {validateBody,isUploadPhoto} = require('../helpers/validator/validateBody')
 const validator= require('../helpers/validator/customerValidator')
-const schema= require('../schemas/customerSchema')
+const schema= require('../schemas/customerSchemas')
 const passport = require('passport')
 const authConfig = require('../helpers/auth')
 const upload = require('../helpers/upload')
 
+// passport
+const passportGoogle = passport.authenticate('googleToken', {session : false ,failureRedirect : '/unauthorized'})
+const passportJWT = passport.authenticate('jwt', {session : false , failureRedirect : '/unauthorized'})
+
 router.route('/')
     // get all data customer
-    .get(passport.authenticate('jwt', {session : false}), customerController.index)
+    .get(passportJWT, customerController.index)
     // register customer
     .post(
         [validateBody(schema.registerSchema), validator.validateRePassword() , validator.validateEmail()]
@@ -23,16 +27,16 @@ router.route('/login')
 // google+ login
 router.route('/login/google')
     .post(
-        passport.authenticate('googleToken', {session : false}),
+        passportGoogle,
         customerController.loginGoogle
     )
 
 router.route('/profile')
     // get data profile
-    .get(passport.authenticate('jwt', {session : false}),customerController.getProfile)
+    .get(passportJWT,customerController.getProfile)
     // update profile
     .patch(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         validateBody(schema.updateProfileSchema),
         customerController.updateProfile
     )
@@ -40,7 +44,7 @@ router.route('/profile')
 router.route('/profile/email')
     // update email
     .patch(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         validateBody(schema.updateEmailSchema),
         validator.validateEmail(),
         customerController.updateEmail
@@ -49,7 +53,7 @@ router.route('/profile/email')
 router.route('/profile/password')
     // update password
     .patch(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         validateBody(schema.updatePasswordSchema),
         validator.validateOldPassword(),
         validator.validateRePassword(),
@@ -57,7 +61,7 @@ router.route('/profile/password')
     )
     // add password
     .post(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         validator.validateAddPassword(),
         validateBody(schema.addPasswordSchema),
         validator.validateRePassword(),
@@ -66,14 +70,13 @@ router.route('/profile/password')
 
 router.route('/profile/photo')
     .patch(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         upload.single('photoProfile'), 
-        validateBody(schema.updatePhotoSchema),
         isUploadPhoto(),
         customerController.updatePhoto
     )
     .delete(
-        passport.authenticate('jwt', {session : false}),
+        passportJWT,
         customerController.deletePhoto
     )
 

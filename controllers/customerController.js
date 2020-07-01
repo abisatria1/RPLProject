@@ -103,7 +103,7 @@ const updatePhoto = async (req,res,next) => {
 
 const deletePhoto = async (req,res,next) => {
     const {user} = req
-    if (!user.publicId) return response(res,false,null,'No photo profile to delete',422)
+    if (!user.publicId) return next(customError('No photo profile to delete',422))
     await cloudinary.v2.uploader.destroy(user.publicId)
     user.photo = null
     user.publicId = null

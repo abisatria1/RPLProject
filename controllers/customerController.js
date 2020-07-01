@@ -29,6 +29,7 @@ const login = async (req,res,next) => {
     const {email,password} = req.body
     const customer = await Customer.findOne({where : {email}})
     if (!customer) return next(customError('Email not valid',401))
+    if (!customer.password) return next(customError('Password not created yet, please login using google',401))
     const result = comparePassword(password,customer.password)
     if (!result) return next(customError('Password not valid',401))
     // sign jwt token

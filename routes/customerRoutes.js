@@ -5,7 +5,7 @@ const validator= require('../helpers/validator/customerValidator')
 const schema= require('../schemas/customerSchemas')
 const passport = require('passport')
 const authConfig = require('../helpers/auth')
-const upload = require('../helpers/upload')
+const {upload} = require('../helpers/upload')
 
 // passport
 const passportGoogle = passport.authenticate('googleToken', {session : false ,failureRedirect : '/unauthorized'})

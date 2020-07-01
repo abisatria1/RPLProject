@@ -21,7 +21,7 @@ const validateBody = schema => {
 
 const isUploadPhoto = () => {
     return async (req,res,next) => {
-        const photo = req.file
+        const photo = req.file || req.files
         if (!photo) return response(res,false,null,'Please insert photo',422)
         next()
     }

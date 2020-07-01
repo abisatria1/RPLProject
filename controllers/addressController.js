@@ -18,7 +18,7 @@ const addAddress = async (req,res,next) => {
 
 const updateAddress = async (req,res,next) => {
     const address = await Address.findByPk(req.params.addressId)
-    if(!address) return response(res,false,null,"Address not found",400)
+    if(!address) return next(customError('Address not found',400))
     address.street = req.body.street
     address.city = req.body.city
     await address.save()
@@ -27,7 +27,7 @@ const updateAddress = async (req,res,next) => {
 
 const deleteAddress = async (req,res,next) => {
     const address = await Address.findByPk(req.params.addressId)
-    if(!address) return response(res,false,null,"Address not found",400)
+    if(!address) return next(customError('Address not found',400))
     const result = await address.destroy()
     response(res,true,{},"Address has been deleted",200)
 }

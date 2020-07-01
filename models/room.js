@@ -13,6 +13,9 @@ const room = db.define(
         },
         roomPhoto : {
             type : Sequelize.STRING
+        },
+        roomPublicId : {
+            type : Sequelize.STRING
         }
     },
     {paranoid : true}

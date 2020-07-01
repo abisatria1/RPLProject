@@ -13,6 +13,9 @@ const category = db.define(
         },
         categoryPhoto : {
             type : Sequelize.STRING
+        },
+        categoryPublicId : {
+            type : Sequelize.STRING
         }
     },
     {paranoid : true}

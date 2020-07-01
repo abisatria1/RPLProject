@@ -18,8 +18,10 @@ app.use(cors())
 // router
 const customerRouter = require('./routes/customerRoutes')
 const addressRouter = require('./routes/addressRoutes')
+const roomRouter = require('./routes/roomRoutes')
 app.use('/api/customer', customerRouter)
 app.use('/api/customer/address', addressRouter)
+app.use('/api/room', roomRouter)
 
 app.use('/unauthorized' , (req,res,next) => {
     let err = new Error ('Unauthorized access')
@@ -38,14 +40,15 @@ app.use((req,res,next) => {
 app.use((err,req,res,next) => {
     const {message} = err
     const status = err.status || 500
-    response(res,false,null,message,status)
+    const data = err.data || null
+    response(res,false,data,message,status)
 })
 
 
 const port = process.env.PORT || 3000
 
 app.listen(port , () => {
-    db.sync({force : true})
+    db.sync({force : false})
     .then(() => console.log(`app is running on port ${port}`))
     .catch(err => console.log(err.message))
 }) 

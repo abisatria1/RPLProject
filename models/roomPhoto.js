@@ -1,18 +1,19 @@
 const Sequelize = require('sequelize')
 const db = require('../config/database')
 
-const category = db.define(
-    'category',
-    {
-        categoryName : {
+const roomPhoto = db.define(
+    'roomPhoto',
+    {   
+        urlPhoto : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        categoryDesc : {
-            type : Sequelize.STRING
+        publicId : {
+            type : Sequelize.STRING,
+            allowNull : false
         }
     },
     {paranoid : true}
 )
 
-module.exports = category
+module.exports = roomPhoto

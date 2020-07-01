@@ -5,3 +5,6 @@ const Room = require('../models/room')
 
 Customer.hasMany(Address)
 Address.belongsTo(Customer)
+
+Room.belongsToMany(Category, {as : 'rooms', through : 'category_room'})
+Category.belongsToMany(Room, {as : 'categories' ,through : 'category_room'})

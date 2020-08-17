@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const db = require('../config/database')
 
 const categoryPhoto = db.define(
-    'categoryPhoto',
+    'categoryphoto',
     {   
         urlPhoto : {
             type : Sequelize.STRING,

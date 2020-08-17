@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const db = require('../config/database')
 
 const roomPhoto = db.define(
-    'roomPhoto',
+    'roomphoto',
     {   
         urlPhoto : {
             type : Sequelize.STRING,

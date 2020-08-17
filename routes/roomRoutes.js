@@ -13,7 +13,6 @@ const {uploadRoomPhoto,upload} = require('../helpers/upload')
 
 router.route('/')
     .get(
-        passportJWT,
         roomController.viewAllRooms
     )
     .post(
@@ -24,7 +23,6 @@ router.route('/')
 
 router.route('/:roomId')
     .get(
-        passportJWT,
         roomController.viewRoomWithCategory
     )
     .patch(

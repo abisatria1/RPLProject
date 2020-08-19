@@ -46,7 +46,7 @@ const createRoom = async (req,res,next) => {
     const room = await Room.create({
         roomName,
         roomDesc,
-        roomPhotos : arr
+        roomphotos : arr
     },{include : [RoomPhoto]})
     response(res,true,room,'room has been created',201)
 }
@@ -77,15 +77,16 @@ const updateRoomPhoto = async (req,res,next) => {
         })
         arr.push(result)
     }
-    await room.setRoomPhotos(arr)
+    await room.setRoomphotos(arr)
     response(res,true,arr,'Successfully update photo',200)
 }
 
 const deleteRoom = async (req,res,next) => {
     const room = await Room.findByPk(req.params.roomId)
-    const roomPhotos = await room.getRoomPhotos()
+    if (!room) return next(customError('room not found',400))
+    const roomPhotos = await room.getRoomphotos()
     await deleteCloudinaryPhoto(roomPhotos)
-    await room.destroy()
+    await room.destroy({force : true})
     response(res,true,{},'Room has been deleted',200)
 }
 

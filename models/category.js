@@ -9,10 +9,10 @@ const category = db.define(
             allowNull : false
         },
         categoryDesc : {
-            type : Sequelize.STRING
+            type : Sequelize.TEXT
         }
     },
-    {paranoid : true}
+    {paranoid : true,}
 )
 
 module.exports = category

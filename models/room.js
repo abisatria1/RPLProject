@@ -9,16 +9,15 @@ const room = db.define(
             allowNull : false
         },
         roomDesc : {
-            type : Sequelize.STRING
+            type : Sequelize.TEXT
         }
     },
     {
         paranoid : true,
         hooks: {
             afterDestroy: async (room, options) => {
-                const result = await room.getRoomPhotos()
+                const result = await room.getRoomphotos()
                 const categories = await room.getCategories()
-                console.log(categories)
                 for (let i = 0; i < result.length; i++) {
                     await result[i].destroy()
                 }

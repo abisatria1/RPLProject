@@ -19,9 +19,11 @@ app.use(cors())
 const customerRouter = require('./routes/customerRoutes')
 const addressRouter = require('./routes/addressRoutes')
 const roomRouter = require('./routes/roomRoutes')
+const categoryRouter = require('./routes/categoryRoutes')
 app.use('/api/customer', customerRouter)
 app.use('/api/customer/address', addressRouter)
 app.use('/api/room', roomRouter)
+app.use('/api/category', categoryRouter)
 
 app.use('/unauthorized' , (req,res,next) => {
     let err = new Error ('Unauthorized access')

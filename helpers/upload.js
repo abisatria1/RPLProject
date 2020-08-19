@@ -4,6 +4,7 @@ const cloudinaryStorage = require('multer-storage-cloudinary')
 
 // schema for validation
 const roomSchemas = require('../schemas/roomSchemas')
+const categorySchemas = require('../schemas/categorySchemas')
 const Joi = require('joi')
 
 // validation body
@@ -65,9 +66,18 @@ const fileFilter = (req,file,cb) => {
 }
 
 const fileFilterForRooms  = (req,file,cb) => {
-    console.log(file)
     if (file.mimetype === 'image/jpeg' ||file.mimetype === 'image/jpg' ||file.mimetype === 'image/gif' || file.mimetype === 'image/png') {
         validateBody(req,roomSchemas.createRoomSchema,cb)
+    }else {
+        err = new Error('File extension doesnt match')
+        err.status = 422 
+        cb(err, false)
+    }
+}
+
+const fileFilterForCategory  = (req,file,cb) => {
+    if (file.mimetype === 'image/jpeg' ||file.mimetype === 'image/jpg' ||file.mimetype === 'image/gif' || file.mimetype === 'image/png') {
+        validateBody(req,categorySchemas.createCategorySchema,cb)
     }else {
         err = new Error('File extension doesnt match')
         err.status = 422 
@@ -91,7 +101,16 @@ const uploadRoomPhoto = multer({
     fileFilter : fileFilterForRooms
 })
 
+const uploadCategoryPhoto = multer({
+    storage,
+    limits : {
+        fileSize : 1024 * 1024 * 10 // 10mb
+    },
+    fileFilter : fileFilterForCategory
+})
+
 module.exports = {
     upload,
-    uploadRoomPhoto
+    uploadRoomPhoto,
+    uploadCategoryPhoto
 }

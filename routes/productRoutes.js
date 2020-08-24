@@ -29,6 +29,9 @@ router.route('/:categoryId')
     )
 
 router.route('/detail/:productId')   
+    .get(
+        productController.getDetailProduct
+    )
     .patch(
         validateBody(schema.createProductSchema),
         productController.updateProductInfo

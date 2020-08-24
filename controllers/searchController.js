@@ -68,8 +68,33 @@ const productRecommendation = async (req,res,next) => {
     response(res,true,products,'Products has been fetched',200)
 }
 
+const similarProductRecommendatiion = async (req,res,next) => {
+    const {productId} = req.params
+    const product = await Product.findOne({
+        include : [Category],
+        where : {id : productId}
+    })
+    if (!product) return next(customError('Product not found',400))
+    const categoryId = product.category.id
+    const products = await Product.findAll ({
+        include : [
+            {
+                model : Category,
+                where : {id : categoryId}
+            },
+            {
+                model : ProductPhoto
+            }
+        ],
+        where : {id : {[Op.not] : productId}},
+        order : sequelize.random()
+    })
+    response(res,true,products,'Products has been fetched',200)
+}
+
 module.exports = {
     searchProduct,
     newProductRecommendation,
-    productRecommendation
+    productRecommendation,
+    similarProductRecommendatiion
 }

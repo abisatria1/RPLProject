@@ -9,4 +9,8 @@ router.route('/newItems/product')
 
 router.route('/recommendation/product')
     .get(searchController.productRecommendation)
+
+router.route('/similar/product/:productId')
+    .get(searchController.similarProductRecommendatiion)
+
 module.exports = router

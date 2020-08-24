@@ -4,6 +4,8 @@ const cloudinary = require('../config/cloudinary')
 // model 
 const Product = require('../models/product')
 const ProductPhoto = require('../models/productPhoto')
+const Category = require('../models/category')
+const Room = require('../models/room')
 
 const deleteCloudinaryPhoto = async (arrPhoto) => {
     for (let i = 0; i < arrPhoto.length; i++) {
@@ -88,11 +90,34 @@ const deleteProduct = async (req,res,next) => {
     response(res,true,{},'product has been deleted',200)
 }
 
+const getDetailProduct = async (req,res,next) => {
+    const product = await Product.findOne({
+        include : [
+            {
+                model : ProductPhoto
+            },
+            {
+                model : Category,
+                include : [{
+                    model : Room,
+                    as : 'rooms',
+                    through : {
+                        attributes : []
+                    }
+                }]
+            }
+        ],
+        where : {id : req.params.productId}
+    })
+    if (!product) return next(customError('Product not found',400))
+    response(res,true,product,'Product has been fetched',200)
+}
 module.exports = {
     addProduct,
     getAllProductsByCategory,
     getAllProducts,
     updateProductInfo,
     updateProductPhoto,
-    deleteProduct
+    deleteProduct,
+    getDetailProduct
 }

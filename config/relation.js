@@ -7,6 +7,8 @@ const RoomPhoto = require('../models/roomPhoto')
 const category_room = require('../models/category_room')
 const Product = require('../models/product')
 const ProductPhoto = require('../models/productPhoto')
+const Cart = require('../models/cart')
+const Order = require('../models/order')
 
 Customer.hasMany(Address)
 Address.belongsTo(Customer)
@@ -27,4 +29,12 @@ Product.belongsTo(Category)
 Product.hasMany(ProductPhoto)
 ProductPhoto.belongsTo(Product)
 
+// cart
+Customer.hasMany(Cart)
+Cart.belongsTo(Customer)
 
+Product.hasMany(Cart)
+Cart.belongsTo(Product)
+
+Order.hasMany(Cart)
+Cart.belongsTo(Order)

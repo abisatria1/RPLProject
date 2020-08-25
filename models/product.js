@@ -18,6 +18,9 @@ const Product = db.define(
         },
         productDesc : {
             type : Sequelize.TEXT
+        },
+        productWeight : {
+            type : Sequelize.FLOAT
         }
     },
     {paranoid : true}

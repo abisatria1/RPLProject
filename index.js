@@ -23,6 +23,7 @@ const categoryRouter = require('./routes/categoryRoutes')
 const productRouter = require('./routes/productRoutes')
 const searchRouter = require('./routes/searchRoutes')
 const coreRouter = require('./routes/coreRoutes')
+const ongkirRouter = require('./routes/ongkirRoutes')
 
 app.use('/api/customer', customerRouter)
 app.use('/api/customer/address', addressRouter)
@@ -31,6 +32,7 @@ app.use('/api/category', categoryRouter)
 app.use('/api/product', productRouter)
 app.use('/api/search', searchRouter)
 app.use('/api/core', coreRouter)
+app.use('/api/ongkir', ongkirRouter)
 
 app.use('/unauthorized' , (req,res,next) => {
     let err = new Error ('Unauthorized access')

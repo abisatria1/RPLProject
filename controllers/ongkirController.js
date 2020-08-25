@@ -66,7 +66,7 @@ const searchCity = async (req,res,next) => {
 }
 
 const courierFee = async (req,res,next) => {
-    const fee = await axios.post('/starter/cost' , {...req.body})
+    const fee = await axios.post('/starter/cost' , {origin : 23, ...req.body}) //origin bandung
     response(res,true,fee.data.rajaongkir.results[0],'Success',200)
 }
 

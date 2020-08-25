@@ -1,5 +1,5 @@
 const router = require('express-promise-router')()
-const addressController = require('../controllers/addressController')
+const addressController = require('../controllers/userAddressController')
 const {validateBody} = require('../helpers/validator/validateBody')
 const schema= require('../schemas/addressSchemas')
 const passport = require('passport')
@@ -20,6 +20,10 @@ router.route('/')
     )
 
 router.route('/:addressId')
+    .get(
+        passportJWT,
+        addressController.getDetailAddress
+    )
     .patch(
         passportJWT,
         validateBody(schema.addAddress),

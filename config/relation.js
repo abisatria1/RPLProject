@@ -11,6 +11,8 @@ const Order = require('../models/order')
 // address
 const UserAddress = require('../models/address/userAddress')
 const OrderAddress = require('../models/address/orderAddress')
+const Province = require('../models/location/province')
+const City = require('../models/location/city')
 
 Customer.hasMany(UserAddress)
 UserAddress.belongsTo(Customer)
@@ -43,3 +45,19 @@ Cart.belongsTo(Order)
 
 Order.hasOne(OrderAddress)
 OrderAddress.belongsTo(Order)
+
+// location
+Province.hasMany(City)
+City.belongsTo(Province)
+
+OrderAddress.belongsTo(Province)
+Province.hasOne(OrderAddress)
+
+City.hasOne(OrderAddress)
+OrderAddress.belongsTo(City)
+
+UserAddress.belongsTo(Province)
+Province.hasOne(UserAddress)
+
+City.hasOne(UserAddress)
+UserAddress.belongsTo(City)

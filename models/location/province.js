@@ -1,15 +1,17 @@
 const Sequelize = require('sequelize')
 const db = require('../../config/database')
 
-const OrderAddress = db.define(
-    'order_address' ,
+const Province = db.define(
+    'province' ,
     {
-        street : {
+        provinceName : {
             type : Sequelize.STRING,
             allowNull : false
         }
     },
-    {paranoid : true},
+    {
+        paranoid : true,
+    },
 )
 
-module.exports = OrderAddress
+module.exports = Province

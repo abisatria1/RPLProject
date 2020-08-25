@@ -1,12 +1,15 @@
 const Sequelize = require('sequelize')
 const db = require('../../config/database')
 
-const UserAddress = db.define(
-    'user_address' ,
+const City = db.define(
+    'city' ,
     {
-        street : {
+        cityName : {
             type : Sequelize.STRING,
             allowNull : false
+        },
+        type : {
+            type : Sequelize.STRING
         }
     },
     {
@@ -14,4 +17,4 @@ const UserAddress = db.define(
     },
 )
 
-module.exports = UserAddress
+module.exports = City

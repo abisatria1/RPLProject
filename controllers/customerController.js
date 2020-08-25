@@ -3,6 +3,16 @@ const Customer = require('../models/customer')
 const {hashPassword,comparePassword} = require('../helpers/hash')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('../config/cloudinary')
+const Transaction = require('../models/payment/transaction')
+const PaymentMethod = require('../models/payment/paymentMethod')
+const Cart = require('../models/cart')
+const Product = require('../models/product')
+const ProductPhoto = require('../models/productPhoto')
+const Courier = require('../models/courier')
+const OrderAddress = require('../models/address/orderAddress')
+const City = require('../models/location/city')
+const Province = require('../models/location/province')
+const OrderStatus = require('../models/orderStatus')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -119,6 +129,50 @@ const addPassword = async (req,res,next) => {
 }
 
 
+const getAllOrder = async (req,res,next) => {
+    const {user} = req
+    const order = await user.getOrders({
+        attributes : {exclude : ['deletedAt','customerId']},
+        include : [
+            {
+                model : OrderStatus,
+                attributes : {exclude : ['updatedAt','deletedAt']},
+            },
+            {
+                attributes : {exclude : ['updatedAt','deletedAt']},
+                model : OrderAddress,
+                include : [City,Province]
+            },
+            {
+                model : Courier,
+                attributes : {exclude : ['updatedAt','deletedAt']},
+            },
+            {
+                model : Transaction,
+                attributes : {exclude : ['deletedAt','orderId','paymentMethodId']},
+                include : [{
+                    model : PaymentMethod,
+                    attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                }]
+            },
+            {
+                model : Cart,
+                attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                include : [{
+                    attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                    model : Product,
+                    include : [{
+                        model : ProductPhoto,
+                        attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                    }]
+                }],
+            },
+        ]
+    })
+    response(res,true,order,'Success get all order',200)
+}
+
+
 
 
 
@@ -133,5 +187,6 @@ module.exports = {
     updatePhoto,
     deletePhoto,
     loginGoogle,
-    addPassword
+    addPassword,
+    getAllOrder
 }

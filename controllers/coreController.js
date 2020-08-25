@@ -6,6 +6,12 @@ const Customer = require('../models/customer')
 const Cart = require('../models/cart')
 const Product = require('../models/product')
 const ProductPhoto = require('../models/productPhoto')
+const PaymentMethod = require('../models/payment/paymentMethod')
+const Order = require('../models/order')
+const Transaction = require('../models/payment/transaction')
+const Courier = require('../models/courier')
+const OrderAddress = require('../models/address/orderAddress')
+const OrderStatus = require('../models/orderStatus')
 
 const addItemsToCart = async (req,res,next) => {
     const {product,quantity} = req.body
@@ -84,10 +90,50 @@ const deleteAllCartItems = async (req,res,next) => {
     response(res,true,{},'All cart items has been deleted',200)
 }
 
+const getPaymentMethod = async (req,res,next) => {
+    const payment = await PaymentMethod.findAll({})
+    response(res,true,payment,'Success get all payment method',200)
+}
+
+// order status belum
+const confirmOrder = async (req,res,next) => {
+    const tanggal = Date.now()
+    const {address,cartItemsId,courier,paymentMethod,orderPriceTotal} = req.body
+    // create order
+    const order = await Order.create({
+        orderCode : `ORDR#${tanggal}`,
+        orderPriceTotal,
+        order_statuses : {statusType : 1},
+        courier,
+        transaction : {
+            transactionCode : `TRSC#${tanggal}`,
+            transactionStatus : 'false',
+            paymentMethodId : paymentMethod.paymentMethodId
+        },
+        order_address : address,
+        customerId : req.user.id
+    },{
+        include : [Transaction,Courier,OrderAddress,OrderStatus]
+    })
+    // update cart items
+    const cartUpdate = await Cart.update({
+        orderId : order.id
+    }, {
+        where : {
+            id : {
+                [Op.in] : cartItemsId
+            }
+        }
+    })
+    response(res,true,{order,cartUpdate},'Success',201)
+}
+
 module.exports = {
     addItemsToCart,
     updateCartItem,
     getCartItems,
     deleteCartItems,
-    deleteAllCartItems
+    deleteAllCartItems,
+    getPaymentMethod,
+    confirmOrder
 }

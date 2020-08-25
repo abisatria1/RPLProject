@@ -1,6 +1,7 @@
 const router = require('express-promise-router')()
 const addressController = require('../controllers/userAddressController')
 const {validateBody} = require('../helpers/validator/validateBody')
+const validator = require('../helpers/validator/addressValidator')
 const schema= require('../schemas/addressSchemas')
 const passport = require('passport')
 const authConfig = require('../helpers/auth')
@@ -16,6 +17,7 @@ router.route('/')
     .post(
         passportJWT,
         validateBody(schema.addAddress),
+        validator.fillProvinceData(),
         addressController.addAddress
     )
 
@@ -27,6 +29,7 @@ router.route('/:addressId')
     .patch(
         passportJWT,
         validateBody(schema.addAddress),
+        validator.fillProvinceData(),
         addressController.updateAddress
     )
     .delete (

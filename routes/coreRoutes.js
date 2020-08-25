@@ -7,6 +7,7 @@ const schema= require('../schemas/coreSchemas')
 // auth
 const passport = require('passport')
 const authConfig = require('../helpers/auth')
+const { countTotalPrice } = require('../helpers/validator/coreValidator')
 
 // passport
 const passportGoogle = passport.authenticate('googleToken', {session : false ,failureRedirect : '/unauthorized'})
@@ -41,6 +42,21 @@ router.route('/cart/:cartId')
     .delete(
         passportJWT,
         coreController.deleteCartItems
+    )
+
+// order
+router.route('/paymentMethod')
+    .get(
+        passportJWT,
+        coreController.getPaymentMethod
+    )
+
+router.route('/confirmOrder')
+    .post(
+        passportJWT,
+        validateBody(schema.confirmOrder),
+        validator.countTotalPrice(),
+        coreController.confirmOrder
     )
 
 

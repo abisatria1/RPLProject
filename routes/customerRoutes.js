@@ -80,4 +80,10 @@ router.route('/profile/photo')
         customerController.deletePhoto
     )
 
+router.route('/information/order')
+    .get(
+        passportJWT,
+        customerController.getAllOrder
+    )
+
 module.exports = router

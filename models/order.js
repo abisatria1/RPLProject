@@ -6,10 +6,6 @@ const Order = db.define(
     {
         orderCode : {
             type : Sequelize.STRING,
-            set () {
-                const date = new Date(Date.now())
-                this.setDataValue('orderCode',`ORDER#${date}`)
-            }
         },
         orderPriceTotal : {
             type : Sequelize.INTEGER,

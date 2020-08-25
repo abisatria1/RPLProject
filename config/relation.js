@@ -1,5 +1,4 @@
 const Customer = require('../models/customer')
-const Address = require('../models/address')
 const Category = require('../models/category')
 const CategoryPhoto = require('../models/categoryPhoto')
 const Room = require('../models/room')
@@ -9,9 +8,12 @@ const Product = require('../models/product')
 const ProductPhoto = require('../models/productPhoto')
 const Cart = require('../models/cart')
 const Order = require('../models/order')
+// address
+const UserAddress = require('../models/address/userAddress')
+const OrderAddress = require('../models/address/orderAddress')
 
-Customer.hasMany(Address)
-Address.belongsTo(Customer)
+Customer.hasMany(UserAddress)
+UserAddress.belongsTo(Customer)
 
 Room.belongsToMany(Category, {as : 'categories', through : category_room})
 Category.belongsToMany(Room, {as : 'rooms' ,through : category_room})  
@@ -38,3 +40,6 @@ Cart.belongsTo(Product)
 
 Order.hasMany(Cart)
 Cart.belongsTo(Order)
+
+Order.hasOne(OrderAddress)
+OrderAddress.belongsTo(Order)

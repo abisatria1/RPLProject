@@ -95,10 +95,10 @@ const getPaymentMethod = async (req,res,next) => {
     response(res,true,payment,'Success get all payment method',200)
 }
 
-// order status belum
 const confirmOrder = async (req,res,next) => {
     const tanggal = Date.now()
     const {address,cartItemsId,cartItems,courier,paymentMethod,orderPriceTotal} = req.body
+
     // create order
     const order = await Order.create({
         orderCode : `ORDR#${tanggal}`,
@@ -115,6 +115,7 @@ const confirmOrder = async (req,res,next) => {
     },{
         include : [Transaction,Courier,OrderAddress,OrderStatus]
     })
+
     // update cart items
     await Cart.update({
         orderId : order.id
@@ -125,13 +126,54 @@ const confirmOrder = async (req,res,next) => {
             }
         }
     })
+
     // update stock
     for (let i = 0; i < cartItems.length; i++) {
         const cart = cartItems[i]
         const stock = cart.product.productStock
         await cart.product.update({productStock : stock-cart.quantity})
     }
+
     response(res,true,{order},'Success',201)
+}
+
+const cancelOrder = async (req,res,next) => {
+    const order = await Order.findOne({
+        include : [
+            {
+                model : OrderStatus,
+            },
+            {
+                model : Cart,
+                include : [Product]
+            }
+        ],
+        where : {
+            [Op.and] : [
+                {id : req.params.orderId},
+                {customerId : req.user.id}
+            ]
+        },
+        order : [
+            [OrderStatus, 'createdAt', 'DESC']
+        ]
+    })
+    // validation
+    if (!order) return next(customError('Order not found',400))
+    if (order.order_statuses[0].statusType != 1) return next(customError('Order cannot be canceled',400))
+
+    // adding order statuses
+    const status = await OrderStatus.create({statusType : -1, orderId : order.id})
+
+    // update stock
+    for (let i = 0; i < order.carts.length; i++) {
+        const cartItem = order.carts[i];
+        const {product} = cartItem
+        const stock = product.productStock
+        await product.update({productStock : stock+cartItem.quantity})
+    }
+    response(res,true,status,'Order canceled',200)
+
 }
 
 module.exports = {
@@ -141,5 +183,6 @@ module.exports = {
     deleteCartItems,
     deleteAllCartItems,
     getPaymentMethod,
-    confirmOrder
+    confirmOrder,
+    cancelOrder
 }

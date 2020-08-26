@@ -59,5 +59,11 @@ router.route('/confirmOrder')
         coreController.confirmOrder
     )
 
+router.route('/cancelOrder/:orderId')
+    .post(
+        passportJWT,
+        coreController.cancelOrder
+    )
+
 
 module.exports = router

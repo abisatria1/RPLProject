@@ -13,6 +13,8 @@ const OrderAddress = require('../models/address/orderAddress')
 const City = require('../models/location/city')
 const Province = require('../models/location/province')
 const OrderStatus = require('../models/orderStatus')
+const Op = require('sequelize').Op
+const db = require('../config/database')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -131,6 +133,23 @@ const addPassword = async (req,res,next) => {
 
 const getAllOrder = async (req,res,next) => {
     const {user} = req
+    const {condition} = req.query
+    let includeCondition
+    if (condition != 'ongoing' && condition != 'all')  
+        return next(customError('Query invalid',400))
+
+    if (condition == 'ongoing') {
+        includeCondition = {
+            [Op.and] : [
+                db.literal(`
+                NOT EXISTS (
+                    SELECT orderId, statusType FROM order_statuses s
+                    WHERE s.orderId = order.id
+                    AND (statusType = 4 OR statusType = -1)
+                )`)
+            ]
+        }
+    }
     const order = await user.getOrders({
         attributes : {exclude : ['deletedAt','customerId']},
         include : [
@@ -167,7 +186,11 @@ const getAllOrder = async (req,res,next) => {
                     }]
                 }],
             },
-        ]
+        ],
+        order : [
+            [OrderStatus, 'createdAt', 'DESC']
+        ],
+        where : includeCondition
     })
     response(res,true,order,'Success get all order',200)
 }

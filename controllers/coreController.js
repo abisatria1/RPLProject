@@ -98,7 +98,7 @@ const getPaymentMethod = async (req,res,next) => {
 // order status belum
 const confirmOrder = async (req,res,next) => {
     const tanggal = Date.now()
-    const {address,cartItemsId,courier,paymentMethod,orderPriceTotal} = req.body
+    const {address,cartItemsId,cartItems,courier,paymentMethod,orderPriceTotal} = req.body
     // create order
     const order = await Order.create({
         orderCode : `ORDR#${tanggal}`,
@@ -116,7 +116,7 @@ const confirmOrder = async (req,res,next) => {
         include : [Transaction,Courier,OrderAddress,OrderStatus]
     })
     // update cart items
-    const cartUpdate = await Cart.update({
+    await Cart.update({
         orderId : order.id
     }, {
         where : {
@@ -125,7 +125,13 @@ const confirmOrder = async (req,res,next) => {
             }
         }
     })
-    response(res,true,{order,cartUpdate},'Success',201)
+    // update stock
+    for (let i = 0; i < cartItems.length; i++) {
+        const cart = cartItems[i]
+        const stock = cart.product.productStock
+        await cart.product.update({productStock : stock-cart.quantity})
+    }
+    response(res,true,{order},'Success',201)
 }
 
 module.exports = {

@@ -42,9 +42,11 @@ const countTotalPrice = () => {
         let total = 0
         let err = false
         let cartItemsId = []
+        let cartItems = []
         for (let i = 0; i < order.length; i++) {
             const element = order[i]
             const item = await user.getCarts({
+                include : [Product],
                 where : {
                     [Op.and] : [
                         {id : element.cartId},
@@ -56,12 +58,20 @@ const countTotalPrice = () => {
                 err = true
                 break
             }
-            cartItemsId.push(item[0].id)
-            total += item[0].fixedPrice * item[0].quantity
+            const cart = item[0]
+            const stock = cart.product.productStock
+            if (stock < cart.quantity) {
+                err = true
+                break
+            }
+            cartItems.push(cart)
+            cartItemsId.push(cart.id)
+            total += cart.fixedPrice * cart.quantity
         }
-        if (err) return response(res,false,null,'Cart id is invalid',400)
+        if (err) return response(res,false,null,'Something error',400)
         req.body.orderPriceTotal = total
         req.body.cartItemsId = cartItemsId
+        req.body.cartItems = cartItems
         next()
     }
 }

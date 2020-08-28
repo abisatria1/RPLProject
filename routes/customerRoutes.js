@@ -86,4 +86,10 @@ router.route('/information/order')
         customerController.getAllOrder
     )
 
+router.route('/information/payment/:orderId')
+    .get(
+        passportJWT,
+        customerController.getPaymentInformation
+    )
+
 module.exports = router

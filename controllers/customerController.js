@@ -15,6 +15,7 @@ const Province = require('../models/location/province')
 const OrderStatus = require('../models/orderStatus')
 const Op = require('sequelize').Op
 const db = require('../config/database')
+const Order = require('../models/order')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -195,6 +196,29 @@ const getAllOrder = async (req,res,next) => {
     response(res,true,order,'Success get all order',200)
 }
 
+const getPaymentInformation = async (req,res,next) => {
+    const {orderId} = req.params
+    const paymentInformation = await Order.findOne({
+        attributes : {exclude : ['customerId','updatedAt','deletedAt']},
+        include : [{
+            model : Transaction,
+            attributes : {exclude : ['updatedAt','deletedAt','orderId','paymentMethodId']},
+            include : [{
+                model : PaymentMethod,
+                attributes : {exclude : ['createdAt','updatedAt','deletedAt']}
+            }]
+        }],
+        where : {
+            [Op.and] : [
+                {id : orderId},
+                {customerId : req.user.id}
+            ]
+        }
+    })
+    if (!paymentInformation) return next(customError('Order not found',400))
+    response(res,true,paymentInformation,'Success get payment information',200)
+}
+
 
 
 
@@ -211,5 +235,6 @@ module.exports = {
     deletePhoto,
     loginGoogle,
     addPassword,
-    getAllOrder
+    getAllOrder,
+    getPaymentInformation
 }

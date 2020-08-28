@@ -1,6 +1,12 @@
 const {response} = require('../wrapper')
 const {comparePassword} = require('../hash')
 const Customer = require('../../models/customer')
+const Order = require('../../models/order')
+const OrderStatus = require('../../models/orderStatus')
+const Transaction = require('../../models/payment/transaction')
+
+const Op = require('sequelize').Op
+
 
 const validateRePassword  = () => {
     return (req,res,next) => {
@@ -40,9 +46,42 @@ const validateAddPassword = () => {
     }
 }
 
+const validateOrderStatusForPayment = () => {
+    return async (req,res,next) => {
+        const {user} = req
+        const order = await Order.findOne({
+            include : [
+                {
+                    model : OrderStatus
+                },
+                {
+                    model : Transaction,
+                    attributes : {exclude : ['deletedAt','updatedAt']}
+                }
+            ],
+            where : {
+                [Op.and] : [
+                    {id : req.params.orderId},
+                    {customerId : user.id}
+                ]
+            },
+            order : [
+                [OrderStatus,'createdAt','DESC']
+            ]
+        })
+        console.log(order)
+        if (!order) return response(res,false,null,'Order not found',400)
+        if (order.order_statuses[0].statusType != 1) 
+            return response(res,false,null,'Order has been paid',400)
+        req.order = order
+        next()
+    }
+}
+
 module.exports = {
     validateRePassword,
     validateEmail,
     validateOldPassword,
-    validateAddPassword
+    validateAddPassword,
+    validateOrderStatusForPayment
 }

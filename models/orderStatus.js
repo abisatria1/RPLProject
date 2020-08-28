@@ -15,14 +15,18 @@ const OrderStatus = db.define(
                         desc = "Please pay your order to process your item"
                         break
                     case 2:
+                        name = "Waiting Payment Confirmation"
+                        desc = "Your payment has been processes, please wait for confirmation"
+                        break
+                    case 3:
                         name = "Packing"
                         desc = "We are currently preparing your order"
                         break
-                    case 3:
+                    case 4:
                         name = "Shipping"
                         desc = "We have sent your order to your place according to the courier you ordered"
                         break
-                    case 4:
+                    case 5:
                         name = "Completed"
                         desc = "Your order has been completed successfully"
                         break

@@ -146,7 +146,7 @@ const getAllOrder = async (req,res,next) => {
                 NOT EXISTS (
                     SELECT orderId, statusType FROM order_statuses s
                     WHERE s.orderId = order.id
-                    AND (statusType = 4 OR statusType = -1)
+                    AND (statusType = 5 OR statusType = -1)
                 )`)
             ]
         }
@@ -219,6 +219,17 @@ const getPaymentInformation = async (req,res,next) => {
     response(res,true,paymentInformation,'Success get payment information',200)
 }
 
+const uploadPaymentPhoto = async (req,res,next) => {
+    const {file,order} = req
+    const update = await order.transaction.update({
+        transactionPhoto : file.url,
+        publicId : file.public_id
+    })
+    // create order status
+    const orderStatus = await OrderStatus.create({statusType : 2, orderId : order.id})
+    response(res,true,{transaction : update, orderStatus},'Success upload payment photo',200)
+}
+
 
 
 
@@ -236,5 +247,6 @@ module.exports = {
     loginGoogle,
     addPassword,
     getAllOrder,
-    getPaymentInformation
+    getPaymentInformation,
+    uploadPaymentPhoto
 }

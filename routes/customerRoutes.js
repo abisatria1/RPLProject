@@ -92,4 +92,13 @@ router.route('/information/payment/:orderId')
         customerController.getPaymentInformation
     )
 
+router.route('/upload/payment/:orderId')
+    .post(
+        passportJWT,
+        validator.validateOrderStatusForPayment(),
+        upload.single('paymentPhoto'),
+        isUploadPhoto(),
+        customerController.uploadPaymentPhoto
+    )
+
 module.exports = router

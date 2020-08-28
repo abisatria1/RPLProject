@@ -35,18 +35,21 @@ const storage = cloudinaryStorage({
         switch (file.fieldname) {
             case 'photoProfile':
                 folderName += "customer"
-                break;
+                break
             case 'categoryPhoto' : 
                 folderName += "category"
-                break;
+                break
             case 'roomPhoto' : 
                 folderName += "room"
-                break;
+                break
             case 'productPhoto' : 
                 folderName += "product"
-                break;
+                break
+            case 'paymentPhoto' : 
+                folderName += "payment"
+                break
             default:
-                break;
+                break
         }
         cb(null,folderName)
     },

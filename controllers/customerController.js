@@ -136,7 +136,7 @@ const getAllOrder = async (req,res,next) => {
     const {user} = req
     const {condition} = req.query
     let includeCondition
-    if (condition != 'ongoing' && condition != 'all')  
+    if (condition != 'ongoing' && condition != 'all' && condition != 'history')  
         return next(customError('Query invalid',400))
 
     if (condition == 'ongoing') {
@@ -144,6 +144,17 @@ const getAllOrder = async (req,res,next) => {
             [Op.and] : [
                 db.literal(`
                 NOT EXISTS (
+                    SELECT orderId, statusType FROM order_statuses s
+                    WHERE s.orderId = order.id
+                    AND (statusType = 5 OR statusType = -1)
+                )`)
+            ]
+        }
+    }else if (condition == 'history') {
+        includeCondition = {
+            [Op.and] : [
+                db.literal(`
+                EXISTS (
                     SELECT orderId, statusType FROM order_statuses s
                     WHERE s.orderId = order.id
                     AND (statusType = 5 OR statusType = -1)

@@ -251,7 +251,10 @@ const getDetailOrder = async (req,res,next) => {
                 {id : orderId},
                 {customerId : req.user.id}
             ]
-        }
+        },
+        order : [
+            [OrderStatus, 'createdAt', 'DESC']
+        ],
     })
     response(res,true,order,'Success get detail order',200)
 }

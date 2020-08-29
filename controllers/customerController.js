@@ -342,7 +342,7 @@ const getPaymentInformation = async (req,res,next) => {
 const uploadPaymentPhoto = async (req,res,next) => {
     const {file,order} = req
     const update = await order.transaction.update({
-        transactionPhoto : file.url,
+        urlPhoto : file.url,
         publicId : file.public_id
     })
     // create order status

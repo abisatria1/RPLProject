@@ -11,9 +11,9 @@ const db = require('./config/database')
 const relation = require('./config/relation')
 
 // middleware
+app.use('*', cors())
 app.use(bodyParser.urlencoded({extended : false}))
 app.use(bodyParser.json())
-app.use(cors())
 
 // router
 const customerRouter = require('./routes/customerRoutes')

@@ -13,6 +13,19 @@ const loginSchema = Joi.object().keys({
     password : Joi.string().required().min(6),
 })
 
+const verifyEmail = Joi.object().keys({
+    emailToken : Joi.string().required()
+})
+
+const verifyForgotPassToken = Joi.object().keys({
+    forgotPassToken : Joi.string().required(),
+    email : Joi.string().email().required(),
+})
+
+const forgotPassword = Joi.object().keys({
+    email : Joi.string().email().required()
+})
+
 const updateProfileSchema = Joi.object().keys({
     name : Joi.string().min(3).required(),
     phone : Joi.string().min(6).required()
@@ -40,5 +53,8 @@ module.exports = {
     updateEmailSchema,
     updateProfileSchema,
     updatePasswordSchema,
-    addPasswordSchema
+    addPasswordSchema,
+    verifyEmail,
+    verifyForgotPassToken,
+    forgotPassword
 }

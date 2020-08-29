@@ -17,6 +17,7 @@ const Op = require('sequelize').Op
 const db = require('../config/database')
 const Order = require('../models/order')
 const mail = require('../config/mail')
+const randomstring = require('randomstring')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -33,10 +34,21 @@ const index = async (req,res,next) => {
 
 // auth
 const register = async(req,res,next) => {
-    let customer = new Customer(req.body)
-    customer.password = hashPassword(customer.password)
-    await customer.save()
-    response(res,true,customer,'Data has been registered',201)
+    const emailToken = randomstring.generate({
+        length: 4,
+        charset: 'numeric'
+    })
+    const customer = await Customer.create({
+        ...req.body,
+        isVerified : 'false',
+        emailToken,
+        password : hashPassword(req.body.password)
+    })
+    console.log(customer)
+    // send email
+    await mail.sendMailVerification(customer.email,emailToken)
+    const token = signToken(customer)
+    response(res,true,{token},'Data has been registered',201)
 }
 
 const login = async (req,res,next) => {
@@ -53,26 +65,71 @@ const login = async (req,res,next) => {
 
 const loginGoogle = async (req,res,next) => {
     const user = req.user[0]
+    user.isVerified = 'true'
+    await user.save()
     const token = signToken(user)
     response(res,true,{token},'Login success',200)
 }
 
 const verifyEmail = async (req,res,next) => {
-    // 
+    const {emailToken} = req.body
+    const {user} = req
+    if (user.isVerified == 'true') return next(customError('User has been verified',400))
+    if (user.emailToken != emailToken) return next(customError('Token not valid',400))
+    const update = await user.update({isVerified : 'true',emailToken : null})
+    response(res,true,{isVerified : update.isVerified},'Success verify email',200)
+}
+
+const verifyForgotPassToken = async (req,res,next) => {
+    const {forgotPassToken,email} = req.body
+    const user = await Customer.findOne({where : {email}})
+    if (!user) return next(customError('User not found',400))
+    if (user.forgotPassToken != forgotPassToken) return next(customError('Token not valid',400))
+    const update = await user.update({forgotPassToken : null})
+    const jwtToken = signToken(user)
+    response(res,true,{token:jwtToken},'Success verify forgot pass token',200)
 }
 
 const resendToken = async (req,res,next) => {
-    // 
+    const {user} = req
+    if (user.isVerified == 'true') return next(customError('user has been verified',400))
+    user.emailToken = randomstring.generate({
+        length: 4,
+        charset: 'numeric'
+    })
+    await user.save()
+    await mail.sendMailVerification(user.email,user.emailToken)
+    response(res,true,{},'Success resend token',200)
 }
 
 const forgotPassword = async (req,res,next) => {
-    // 
+    const {email} = req.body
+    const user = await Customer.findOne({where : {email}})
+    if (!user) return next(customError('Email not registered',400))
+    if (!user.password || user.password == null) 
+        return next(customError('Password not created yet, please login using google',400))
+    const token = randomstring.generate({
+        length: 4,
+        charset: 'numeric'
+    })
+    await user.update({forgotPassToken : token})
+    await mail.sendMailResetPassword(email,token)
+    response(res,true,{},'Please check your email for reset password token',200)
 }
 
 // end for auth
 
 const getProfile = async (req,res,next) => {
-    response(res,true,req.user,'Customer profile has been fetched',200)
+    const {user} = req
+    response(res,true,{
+        id : user.id,
+        name : user.name,
+        phone : user.phone,
+        photo : user.photo,
+        email : user.email,
+        password : user.password,
+        isVerified : user.isVerified
+    },'Customer profile has been fetched',200)
 }
 
 const updateProfile = async (req,res,next) => {
@@ -293,14 +350,14 @@ const uploadPaymentPhoto = async (req,res,next) => {
     response(res,true,{transaction : update, orderStatus},'Success upload payment photo',200)
 }
 
-
-
-
-
 module.exports = {
     index,
     register,
     login,
+    verifyEmail,
+    verifyForgotPassToken,
+    forgotPassword,
+    resendToken,
     getProfile,
     updateProfile,
     updateEmail,

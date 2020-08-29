@@ -31,6 +31,31 @@ router.route('/login/google')
         customerController.loginGoogle
     )
 
+router.route('/verifyEmail')
+    .post(
+        passportJWT,
+        validateBody(schema.verifyEmail),
+        customerController.verifyEmail
+    )
+
+router.route('/verifyForgotPass')
+    .post(
+        validateBody(schema.verifyForgotPassToken),
+        customerController.verifyForgotPassToken
+    )
+
+router.route('/email/token')
+    .post(
+        passportJWT,
+        customerController.resendToken
+    )
+
+router.route('/forgotPassword')
+    .post(
+        validateBody(schema.forgotPassword),
+        customerController.forgotPassword
+    )
+
 router.route('/profile')
     // get data profile
     .get(passportJWT,customerController.getProfile)

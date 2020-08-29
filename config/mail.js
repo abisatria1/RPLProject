@@ -1,5 +1,5 @@
-const nodemailer = require('nodemailer');
-const smtpTransport = require('nodemailer-smtp-transport');
+const nodemailer = require('nodemailer')
+const smtpTransport = require('nodemailer-smtp-transport')
 const dotenv = require('dotenv').config()
 
 const transporter = nodemailer.createTransport({
@@ -19,9 +19,9 @@ const transporter = nodemailer.createTransport({
 
 const sendMailVerification = async (receiver,token) => {
     const mailOptions = {
-        from: `"Infineeds" <${process.env.MAIL_USERNAME}>`,
+        from: `"Anty Furniture" <${process.env.MAIL_USERNAME}>`,
         to: receiver,
-        subject: 'Verifikasi Email User Infineeds',
+        subject: 'Email Verification Anty Furniture',
         html: 
         `
         <div style="text-align: center; width : 70%; margin : auto">
@@ -37,9 +37,9 @@ const sendMailVerification = async (receiver,token) => {
 
 const sendMailResetPassword = async (receiver,passToken) => {
     const mailOptions = {
-        from: `"Infineeds" <${process.env.MAIL_USERNAME}>`,
+        from: `"Anty Furniture" <${process.env.MAIL_USERNAME}>`,
         to: receiver,
-        subject: 'Reset Password User Infineeds',
+        subject: 'Reset Password User Anty Furniture',
         html : 
         `
         <div style="text-align: center; width : 70%; margin : auto">

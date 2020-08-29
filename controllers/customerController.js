@@ -16,6 +16,7 @@ const OrderStatus = require('../models/orderStatus')
 const Op = require('sequelize').Op
 const db = require('../config/database')
 const Order = require('../models/order')
+const mail = require('../config/mail')
 
 const signToken = customer => {
     return token = jwt.sign({
@@ -207,6 +208,54 @@ const getAllOrder = async (req,res,next) => {
     response(res,true,order,'Success get all order',200)
 }
 
+const getDetailOrder = async (req,res,next) => {
+    const {orderId} = req.params
+    const order = await Order.findOne({
+        include : [
+            {
+                model : OrderStatus,
+                attributes : {exclude : ['updatedAt','deletedAt']},
+            },
+            {
+                attributes : {exclude : ['updatedAt','deletedAt']},
+                model : OrderAddress,
+                include : [City,Province]
+            },
+            {
+                model : Courier,
+                attributes : {exclude : ['updatedAt','deletedAt']},
+            },
+            {
+                model : Transaction,
+                attributes : {exclude : ['deletedAt','orderId','paymentMethodId']},
+                include : [{
+                    model : PaymentMethod,
+                    attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                }]
+            },
+            {
+                model : Cart,
+                attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                include : [{
+                    attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                    model : Product,
+                    include : [{
+                        model : ProductPhoto,
+                        attributes : {exclude : ['createdAt','updatedAt','deletedAt']},
+                    }]
+                }],
+            },
+        ],
+        where : {
+            [Op.and] : [
+                {id : orderId},
+                {customerId : req.user.id}
+            ]
+        }
+    })
+    response(res,true,order,'Success get detail order',200)
+}
+
 const getPaymentInformation = async (req,res,next) => {
     const {orderId} = req.params
     const paymentInformation = await Order.findOne({
@@ -258,6 +307,7 @@ module.exports = {
     loginGoogle,
     addPassword,
     getAllOrder,
+    getDetailOrder,
     getPaymentInformation,
     uploadPaymentPhoto
 }

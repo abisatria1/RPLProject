@@ -86,6 +86,12 @@ router.route('/information/order')
         customerController.getAllOrder
     )
 
+router.route('/information/order/:orderId')
+    .get(
+        passportJWT,
+        customerController.getDetailOrder
+    )
+
 router.route('/information/payment/:orderId')
     .get(
         passportJWT,

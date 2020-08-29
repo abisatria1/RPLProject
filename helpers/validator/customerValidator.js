@@ -71,7 +71,7 @@ const validateOrderStatusForPayment = () => {
         })
         console.log(order)
         if (!order) return response(res,false,null,'Order not found',400)
-        if (order.order_statuses[0].statusType != 1) 
+        if (order.order_statuses[0].statusType != 1 && order.order_statuses[0].statusType != 2) 
             return response(res,false,null,'Order has been paid',400)
         req.order = order
         next()

@@ -176,6 +176,43 @@ const cancelOrder = async (req,res,next) => {
 
 }
 
+const updateOrderStatus = async (req,res,next) => {
+    const {statusType} = req.query
+    const {orderId} = req.params
+    if (isNaN(statusType) || !statusType ) return next(customError('Invalid status type query',400))
+    const order = await Order.findOne({
+        where : {id : orderId},
+        include : [OrderStatus],
+        order : [
+            [OrderStatus,'createdAt','DESC']
+        ]
+    })
+    if (!order) return next(customError('order not found',400))
+    const status = await OrderStatus.create({statusType : parseInt(statusType), orderId})
+    response(res,true,status,'Success adding order status',200)
+}
+
+const verifyPayment = async (req,res,next) => {
+    const {orderId} = req.params
+    const order = await Order.findOne({
+        where : {id : orderId},
+        include : [Transaction,OrderStatus],
+        order : [
+            [OrderStatus,'createdAt','DESC']
+        ]
+    })
+    if (!order) return next(customError('order not found',400))
+    if (order.order_statuses[0].statusType != 2) return next(customError('order status not valid',400))
+
+    const {transactionStatus,urlPhoto} = order.transaction
+    if (transactionStatus == 'true') return next(customError('Order has been paid',400))
+    if (!urlPhoto || urlPhoto == null) return next(customError('Payment photo is required',400))
+
+    const update = await order.transaction.update({transactionStatus : 'true'})
+    const updateOrderStatus = await OrderStatus.create({statusType : 3, orderId})
+    response(res,true,{transaction: update, orderStatus : updateOrderStatus},'Success verify order payment',200)
+}
+
 module.exports = {
     addItemsToCart,
     updateCartItem,
@@ -184,5 +221,7 @@ module.exports = {
     deleteAllCartItems,
     getPaymentMethod,
     confirmOrder,
-    cancelOrder
+    cancelOrder,
+    updateOrderStatus,
+    verifyPayment
 }

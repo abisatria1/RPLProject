@@ -65,5 +65,15 @@ router.route('/cancelOrder/:orderId')
         coreController.cancelOrder
     )
 
+router.route('/status/order/:orderId')
+    .post(
+        coreController.updateOrderStatus
+    )
+
+router.route('/status/payment/:orderId')
+    .post(
+        coreController.verifyPayment
+    )
+
 
 module.exports = router
